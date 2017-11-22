@@ -2,6 +2,10 @@ from datetime import datetime
 from flask import *
 from flask_sqlalchemy import *
 
+"""
+Configuration
+"""
+
 app = Flask(__name__)
 
 app.config['SECRET_KEY'] = '17161a92-9c2c-4795-93ab-b3a860391d50'
@@ -129,6 +133,10 @@ def create_categorie():
 @app.route('/categorie', methods=['GET'])
 def view_categories():
     return ''
+
+"""
+Run
+"""
 
 if __name__ == '__main__':
     app.run(debug=True)
