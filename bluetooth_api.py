@@ -107,7 +107,7 @@ def create_client():
     db.session.add(new_client)
     db.session.commit()
 
-    return jsonify({'message': 'New user created!'})
+    return jsonify({'message': 'New client created!'})
 
 @app.route('/client', methods=['GET'])
 def view_clients():
@@ -134,14 +134,22 @@ def view_clients():
 
 @app.route('/client/<id>', methods=['DELETE'])
 def delete_client(id):
-    return ''
+    client = Client.query.filter_by(id=id).first()
+
+    if not client:
+        return jsonify({'message': 'No user found!'})
+
+    db.session.delete(client)
+    db.session.commit()
+
+    return jsonify({'message': 'The user has been deleted!'})
 
 @app.route('/client/<id>', methods=['GET'])
 def view_client(id):
     client = Client.query.filter_by(id=id).first()
 
     if not client:
-        return jsonify({'message': 'No user found!'})
+        return jsonify({'message': 'No client found!'})
 
     client_data = {}
     client_data['id'] = client.id
@@ -165,11 +173,31 @@ API Visite
 
 @app.route('/visite', methods=['POST'])
 def create_visite():
-    return ''
+    data = request.get_json()
+    client = Client.query.filter_by(adresse_mac=data['adresse_mac'])
+
+    if not client:
+        return jsonify({'message': 'Unknow mac adress'})
+
+    new_visite = Visite(client.id)
+    db.session.add(new_visite)
+    db.session.commit()
+
+    return jsonify({'message': 'New visite created'})
 
 @app.route('/visite', methods=['GET'])
 def view_visites():
-    return ''
+    visites = Visite.query.all()
+    output = []
+
+    for visite in visites:
+        visite_data = {}
+        visite_data['id'] = visite.id
+        visite_data['datetime'] = visite.datetime
+        visite_data['client_id'] = visite.client_id
+        output.append(visite_data)
+
+    return jsonify({'visites': output})
 
 """
 API Promotion
@@ -177,7 +205,13 @@ API Promotion
 
 @app.route('/promotion', methods=['POST'])
 def create_promotion():
-    return ''
+    data = request.get_json()
+
+    new_promotion = Promotion(data['nom'])
+    db.session.add(new_promotion)
+    db.session.commit()
+
+    return jsonify({'message': 'New category created'})
 
 @app.route('/promotion', methods=['GET'])
 def view_promotions():
@@ -197,19 +231,30 @@ API Categorie
 
 @app.route('/categorie', methods=['POST'])
 def create_categorie():
-    return ''
+    data = request.get_json()
+
+    new_categorie = Categorie(data['nom'])
+    db.session.add(new_categorie)
+    db.session.commit()
+
+    return jsonify({'message': 'New visite created'})
 
 @app.route('/categorie', methods=['GET'])
 def view_categories():
-    return ''
+    categories = Categorie.query.all()
+    output = []
+
+    for categorie in categories:
+        categorie_data = {}
+        categorie_data['id'] = categorie.id
+        categorie_data['nom'] = categorie.nom
+        output.append(categorie_data)
+
+    return jsonify({'visites': output})
 
 """
 Run
 """
 
 if __name__ == '__main__':
-    try:
-        db.create_all()
-    except:
-        print("Database non creee")
     app.run(debug=True)
