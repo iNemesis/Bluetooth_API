@@ -215,15 +215,45 @@ def create_promotion():
 
 @app.route('/promotion', methods=['GET'])
 def view_promotions():
-    return ''
+    promotions = Promotion.query.all()
+    output = []
+
+    for promotion in promotions:
+        promotion_data = {}
+        promotion_data['id'] = promotion.id
+        promotion_data['message'] = promotion.message
+        promotion_data['categorie_id'] = promotion.categorie_id
+        promotion_data['client_id'] = promotion.client_id
+        output.append(promotion_data)
+
+    return jsonify({'promotions': output})
 
 @app.route('/promotion/<id>', methods=['DELETE'])
 def delete_promotion(id):
-    return ''
+    promotion = Promotion.query.filter_by(id=id).first()
+
+    if not promotion:
+        return jsonify({'message': 'No promotion found!'})
+
+    db.session.delete(promotion)
+    db.session.commit()
+
+    return jsonify({'message': 'The promotion has been deleted!'})
 
 @app.route('/promotion/<id>', methods=['GET'])
 def view_promotion(id):
-    return ''
+    promotion = Promotion.query.filter_by(id=id).first()
+
+    if not promotion:
+        return jsonify({'message': 'No promotion found!'})
+
+    promotion_data = {}
+    promotion_data['id'] = promotion.id
+    promotion_data['message'] = promotion.message
+    promotion_data['categorie_id'] = promotion.categorie_id
+    promotion_data['client_id'] = promotion.client_id
+
+    return jsonify({'promotion': promotion_data})
 
 """
 API Categorie
