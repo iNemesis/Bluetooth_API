@@ -1,6 +1,7 @@
 from datetime import datetime
 from flask import *
 from flask_sqlalchemy import *
+from bluetooth_discover import *
 
 """
 Configuration
@@ -50,6 +51,8 @@ class Client(db.Model):
         if date_creation != None:
             self.date_creation = date_creation
 
+    def __str__(self):
+        return '{} {}'.format(self.prenom, self.nom)
 
 promotions = db.Table('promotions',
     db.Column('client_id', db.Integer, db.ForeignKey('client.id'), primary_key=True),
@@ -68,6 +71,9 @@ class Promotion(db.Model):
         self.categorie_id = categorie_id
         self.client_id = client_id
 
+    def __str__ (self):
+        return '{}'.format(self.message)
+
 class Visite(db.Model):
     id = db.Column(db.Integer, primary_key=True, nullable=False)
     datetime = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
@@ -76,6 +82,9 @@ class Visite(db.Model):
 
     def __init__(self, client_id):
         self.client_id = client_id
+
+    def __str__(self):
+        return '{} : {}'.format(self.datetime, Client.query.get(self.client_id))
 
 class Categorie(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -86,6 +95,9 @@ class Categorie(db.Model):
     def __init__(self, nom):
         self.nom = nom
 
+    def __str__(self):
+        return '{}'.format(self.nom)
+
 class Detection(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     datetime = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
@@ -93,6 +105,9 @@ class Detection(db.Model):
 
     def __init__(self, adresse_mac):
         self.adresse_mac = adresse_mac
+
+    def __str__(self):
+        return '{} : {}'.format(self.datetime, self.adresse_mac)
 
 """
 API Client
@@ -174,16 +189,18 @@ API Visite
 @app.route('/visite', methods=['POST'])
 def create_visite():
     data = request.get_json()
-    client = Client.query.filter_by(adresse_mac=data['adresse_mac'])
+    adresses_mac = data['devices']
 
-    if not client:
-        return jsonify({'message': 'Unknow mac adress'})
-
-    new_visite = Visite(client.id)
-    db.session.add(new_visite)
+    for device in adresses_mac:
+        client = Client.query.filter_by(device)
+        if client is not None:
+            new_visite = Visite(client.id)
+            db.session.add(new_visite)
+        detection = Detection(device)
+        db.session.add(detection)
     db.session.commit()
 
-    return jsonify({'message': 'New visite created'})
+    return jsonify({'message': 'New detection created'})
 
 @app.route('/visite', methods=['GET'])
 def view_visites():
