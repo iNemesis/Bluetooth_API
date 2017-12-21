@@ -190,9 +190,8 @@ API Visite
 def create_visite():
     data = request.get_json(force=True)
     adresses_mac = data['devices']
-    print(adresses_mac)
+
     for device in adresses_mac:
-        print('--- ' + device)
         client = Client.query.filter_by(adresse_mac=device).first()
         if client is not None:
             new_visite = Visite(client.id)
@@ -306,14 +305,17 @@ API Detection
 
 @app.route('/detection', methods=['GET'])
 def view_detections():
-    detections = Detection.query.all()
+    detections = Detection.query.all().reverse()
     output = []
 
-    for detection in detections:
-        detection_data = {}
-        detection_data['adresse_mac'] = detection.adresse_mac
-        detection_data['timestamp'] = detection.datetime
-        output.append(detection_data)
+    try:
+        for detection in detections:
+            detection_data = {}
+            detection_data['adresse_mac'] = detection.adresse_mac
+            detection_data['timestamp'] = detection.datetime
+            output.append(detection_data)
+    except(TypeError):
+        pass
 
     return jsonify({'detections': output})
 
