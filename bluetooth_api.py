@@ -188,11 +188,12 @@ API Visite
 
 @app.route('/visite', methods=['POST'])
 def create_visite():
-    data = request.get_json()
+    data = request.get_json(force=True)
     adresses_mac = data['devices']
-
+    print(adresses_mac)
     for device in adresses_mac:
-        client = Client.query.filter_by(device)
+        print('--- ' + device)
+        client = Client.query.filter_by(adresse_mac=device).first()
         if client is not None:
             new_visite = Visite(client.id)
             db.session.add(new_visite)
@@ -298,6 +299,23 @@ def view_categories():
         output.append(categorie_data)
 
     return jsonify({'visites': output})
+
+"""
+API Detection
+"""
+
+@app.route('/detection', methods=['GET'])
+def view_detections():
+    detections = Detection.query.all()
+    output = []
+
+    for detection in detections:
+        detection_data = {}
+        detection_data['adresse_mac'] = detection.adresse_mac
+        detection_data['timestamp'] = detection.datetime
+        output.append(detection_data)
+
+    return jsonify({'detections': output})
 
 """
 Run

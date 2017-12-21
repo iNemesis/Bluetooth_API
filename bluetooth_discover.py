@@ -1,11 +1,12 @@
 from flask import jsonify
-import bluetooth, requests
+import bluetooth, requests, json
 
 URL = 'http://127.0.0.1:5000/'
 
 def get_all_devices():
     devices = bluetooth.discover_devices()
-    return jsonify({'devices' : devices})
+    return json.dumps({'devices' : devices})
+    #return jsonify({'devices' : devices})
 
 def send_all_devices():
     request_content = get_all_devices()
