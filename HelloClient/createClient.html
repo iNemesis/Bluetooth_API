@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+  <title>HelloClient - Gestionnaire de clients</title>
+  <!-- Bootstrap core CSS-->
+  <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Custom fonts for this template-->
+  <link href="vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+  <!-- Custom styles for this template-->
+  <link href="css/helloclient.css" rel="stylesheet">
+</head>
+
+<body class="fixed-nav sticky-footer bg-dark" id="page-top">
+  <!-- Navigation-->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top" id="mainNav">
+    <a class="navbar-brand" href="index.html">HelloClient</a>
+    <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarResponsive">
+      <ul class="navbar-nav navbar-sidenav" id="exampleAccordion">
+        <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Dashboard">
+          <a class="nav-link" href="index.html">
+            <i class="fa fa-fw fa-dashboard"></i>
+            <span class="nav-link-text">Tableau de bord</span>
+          </a>
+        </li>
+        <li class="nav-item" data-toggle="tooltip" data-placement="right">
+          <a class="nav-link nav-link-collapse collapsed" data-toggle="collapse" href="#menuClient" data-parent="#exampleAccordion">
+            <i class="fa fa-fw fa-user"></i>
+            <span class="nav-link-text">Client</span>
+          </a>
+          <ul class="sidenav-second-level collapse" id="menuClient">
+            <li>
+              <a href="createClient.html">Créer un client</a>
+            </li>
+            <li>
+              <a href="viewClient.html">Lister les clients</a>
+            </li>
+          </ul>
+        </li>
+        <li class="nav-item" data-toggle="tooltip" data-placement="right">
+          <a class="nav-link nav-link-collapse collapsed" data-toggle="collapse" href="#menuVisit" data-parent="#exampleAccordion">
+            <i class="fa fa-fw fa-users"></i>
+            <span class="nav-link-text">Visite</span>
+          </a>
+          <ul class="sidenav-second-level collapse" id="menuVisit">
+            <li>
+              <a href="viewVisit.html">Lister les visites</a>
+            </li>
+          </ul>
+        </li>
+        <li class="nav-item" data-toggle="tooltip" data-placement="right">
+          <a class="nav-link nav-link-collapse collapsed" data-toggle="collapse" href="#menuPromotion" data-parent="#exampleAccordion">
+            <i class="fa fa-fw fa-eur"></i>
+            <span class="nav-link-text">Promotion</span>
+          </a>
+          <ul class="sidenav-second-level collapse" id="menuPromotion">
+            <li>
+              <a href="createPromotion.html">Créer une promotion</a>
+            </li>
+            <li>
+              <a href="viewPromotion.html">Lister les promotions</a>
+            </li>
+            <li>
+              <a href="createCategory.html">Créer une catégorie</a>
+            </li>
+            <li>
+              <a href="viewCategory.html">Lister les catégories</a>
+            </li>
+          </ul>
+        </li>
+        <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Link">
+          <a class="nav-link" href="viewDetection.html">
+            <i class="fa fa-fw fa-eye"></i>
+            <span class="nav-link-text">Détection Adresse MAC</span>
+          </a>
+        </li>
+      </ul>
+      <!-- Button small Menu (bottom) -->
+      <ul class="navbar-nav sidenav-toggler">
+        <li class="nav-item">
+          <a class="nav-link text-center" id="sidenavToggler">
+            <i class="fa fa-fw fa-angle-left"></i>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+  <div class="content-wrapper">
+    <div class="container-fluid">
+      <!-- Breadcrumbs-->
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+          <a href="index.html">Client</a>
+        </li>
+        <li class="breadcrumb-item active">Créer un client</li>
+      </ol>
+      <div class="card mb-3">
+        <div class="card-header">
+          <i class="fa fa-user"></i> Créer un client</div>
+          <div id="notification"></div>
+        <div class="card-body">
+          <form id="formClient" onsubmit="createClient(this)" method="POST">
+            <div class="form-group">
+              <label for="nom">Nom de famille</label>
+              <input type="text" class="form-control" id="nom" name="nom" required>
+            </div>
+            <div class="form-group">
+              <label for="prenom">Prénom</label>
+              <input type="text" class="form-control" id="prenom" name="prenom" required>
+            </div>
+            <div class="form-group">
+              <label for="date_naissance">Date de naissance</label>
+              <input type="date" class="form-control" id="date_naissance" name="date_naissance" required>
+            </div>
+            <div class="form-group">
+              <label for="telephone">Téléphone</label>
+              <input type="tel" class="form-control" id="telephone" name="telephone" required>
+            </div>
+            <div class="form-group">
+              <label for="rue">Rue</label>
+              <input type="text" class="form-control" id="rue" name="rue" required>
+            </div>
+            <div class="form-group">
+              <label for="ville">Ville</label>
+              <input type="text" class="form-control" id="ville" name="ville" required>
+            </div>
+            <div class="form-group">
+              <label for="code_postal">Code Postal</label>
+              <input pattern="[0-9]{5}" type="text" class="form-control" id="code_postal" name="code_postal" required>
+            </div>
+            <div class="form-group">
+              <label for="pays">Pays</label>
+              <input type="text" class="form-control" id="pays" name="pays" required>
+            </div>
+            <div class="form-group">
+              <label for="adresse_mac">Adresse MAC</label>
+              <input type="text" class="form-control" id="adresse_mac" name="adresse_mac" required>
+            </div>
+            <div class="form-group">
+              <label for="email">Adresse E-mail</label>
+              <input type="email" class="form-control" id="email" name="email">
+            </div>
+            <button type="submit" class="btn btn-primary">Enregistrer</button>
+          </form>
+        </div>
+      </div>
+    </div>
+    <!-- /.container-fluid-->
+    <!-- /.content-wrapper-->
+    <footer class="sticky-footer">
+      <div class="container">
+        <div class="text-center">
+          <small>HelloClient - 2017</small>
+        </div>
+      </div>
+    </footer>
+    <!-- Scroll to Top Button-->
+    <a class="scroll-to-top rounded" href="#page-top">
+      <i class="fa fa-angle-up"></i>
+    </a>
+    <!-- Bootstrap core JavaScript-->
+    <script src="vendor/jquery/jquery.min.js"></script>
+    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <!-- Core plugin JavaScript-->
+    <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
+    <!-- Custom scripts for all pages-->
+    <script src="js/sb-admin.min.js"></script>
+  </div>
+</body>
+
+</html>
+
+
+<script>
+  function preventFormSubmit() {
+    document.getElementById('formClient').addEventListener('submit', function(event) {
+      event.preventDefault();
+    });
+  }
+  window.addEventListener('load', preventFormSubmit);
+      
+  function createClient(formObject) {
+    var object = {};
+    for(var i=0;i<formObject.elements.length;i++) {
+      object[formObject.elements[i].name] = formObject.elements[i].value;
+    }
+
+    console.log(object['nom']);
+
+    $.post('http://localhost:5000/client',
+      JSON.stringify({
+          nom: object['nom'],
+          prenom: object['prenom'],
+          telephone: object['telephone'],
+          rue: object['rue'],
+          ville: object['ville'],
+          code_postal: object['code_postal'],
+          pays: object['pays'],
+          adresse_mac: object['adresse_mac'],
+          date_naissance: object['date_naissance'],
+          email: object['email']
+      }), function(data) {
+          if(data.message) {
+            $('#notification').html('<div class="alert alert-success" role="alert">' + data.message + '</div>').slideDown();
+            $('.card-body').slideUp();
+          } else {
+            $('#notification').html('<div class="alert alert-danger" role="alert">Une erreur s\'est produite, merci de contacter l\'administrateur</div>').slideDown();
+            $('.card-body').slideUp();
+          }
+
+    });
+  }
+</script>

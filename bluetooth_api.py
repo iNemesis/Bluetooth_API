@@ -2,12 +2,14 @@ from datetime import datetime
 from flask import *
 from flask_sqlalchemy import *
 from bluetooth_discover import *
+from flask_cors import CORS
 
 """
 Configuration
 """
 
 app = Flask(__name__)
+CORS(app)
 
 app.config['SECRET_KEY'] = '17161a92-9c2c-4795-93ab-b3a860391d50'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:root@127.0.0.1:3306/db'
@@ -33,7 +35,7 @@ class Client(db.Model):
     date_creation = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
     visites = db.relationship('Visite', backref='client', lazy='dynamic')
-    promotions = db.relationship('Promotion', secondary='promotions',
+    promotions = db.relationship("Promotion", secondary='promotions',
                                  backref=db.backref('clients', lazy=True),
                                  lazy='subquery')
 
@@ -55,8 +57,8 @@ class Client(db.Model):
         return '{} {}'.format(self.prenom, self.nom)
 
 promotions = db.Table('promotions',
-    db.Column('client_id', db.Integer, db.ForeignKey('client.id'), primary_key=True),
-    db.Column('promotion_id', db.Integer, db.ForeignKey('promotion.id'), primary_key=True)
+    db.Column('client_id', db.Integer, db.ForeignKey('client.id')),
+    db.Column('promotion_id', db.Integer, db.ForeignKey('promotion.id'))
 )
 
 class Promotion(db.Model):
@@ -64,12 +66,10 @@ class Promotion(db.Model):
     message = db.Column(db.Text, nullable=False)
 
     categorie_id = db.Column(db.Integer, db.ForeignKey('categorie.id'))
-    client_id = db.Column(db.Integer, db.ForeignKey('client.id'))
 
-    def __init__(self, message, categorie_id, client_id):
+    def __init__(self, message, categorie_id):
         self.message = message
         self.categorie_id = categorie_id
-        self.client_id = client_id
 
     def __str__ (self):
         return '{}'.format(self.message)
@@ -115,7 +115,8 @@ API Client
 
 @app.route('/client', methods=['POST'])
 def create_client():
-    data = request.get_json()
+    print(request.get_json())
+    data = request.get_json(force=True)
 
     new_client = Client(data['nom'], data['prenom'], data['telephone'], data['rue'], data['ville'], data['code_postal'],
                         data['pays'], data['adresse_mac'], data['date_naissance'], data['email'])
@@ -222,13 +223,13 @@ API Promotion
 
 @app.route('/promotion', methods=['POST'])
 def create_promotion():
-    data = request.get_json()
+    data = request.get_json(force=True)
 
-    new_promotion = Promotion(data['nom'])
+    new_promotion = Promotion(data['message'], 1)
     db.session.add(new_promotion)
     db.session.commit()
 
-    return jsonify({'message': 'New category created'})
+    return jsonify({'message': 'New promotion created'})
 
 @app.route('/promotion', methods=['GET'])
 def view_promotions():
@@ -240,7 +241,6 @@ def view_promotions():
         promotion_data['id'] = promotion.id
         promotion_data['message'] = promotion.message
         promotion_data['categorie_id'] = promotion.categorie_id
-        promotion_data['client_id'] = promotion.client_id
         output.append(promotion_data)
 
     return jsonify({'promotions': output})
@@ -268,7 +268,6 @@ def view_promotion(id):
     promotion_data['id'] = promotion.id
     promotion_data['message'] = promotion.message
     promotion_data['categorie_id'] = promotion.categorie_id
-    promotion_data['client_id'] = promotion.client_id
 
     return jsonify({'promotion': promotion_data})
 
@@ -278,13 +277,13 @@ API Categorie
 
 @app.route('/categorie', methods=['POST'])
 def create_categorie():
-    data = request.get_json()
+    data = request.get_json(force=True)
 
     new_categorie = Categorie(data['nom'])
     db.session.add(new_categorie)
     db.session.commit()
 
-    return jsonify({'message': 'New visite created'})
+    return jsonify({'message': 'New categorie created'})
 
 @app.route('/categorie', methods=['GET'])
 def view_categories():
@@ -297,7 +296,7 @@ def view_categories():
         categorie_data['nom'] = categorie.nom
         output.append(categorie_data)
 
-    return jsonify({'visites': output})
+    return jsonify({'categories': output})
 
 """
 API Detection
@@ -305,19 +304,23 @@ API Detection
 
 @app.route('/detection', methods=['GET'])
 def view_detections():
-    detections = Detection.query.all().reverse()
+    detections = Detection.query.order_by(Detection.datetime).all()[::-1]
     output = []
 
-    try:
-        for detection in detections:
-            detection_data = {}
-            detection_data['adresse_mac'] = detection.adresse_mac
-            detection_data['timestamp'] = detection.datetime
-            output.append(detection_data)
-    except(TypeError):
-        pass
+    for detection in detections:
+        detection_data = {}
+        detection_data['adresse_mac'] = detection.adresse_mac
+        detection_data['timestamp'] = detection.datetime
+        output.append(detection_data)
 
     return jsonify({'detections': output})
+
+"""
+Utils
+"""
+
+def send_sms(id):
+    pass
 
 """
 Run
